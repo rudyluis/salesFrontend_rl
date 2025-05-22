@@ -58,7 +58,7 @@ const Dashboard = ({ data }: DashboardProps) => {
             <Card className="cursor-pointer hover:bg-primary/5 transition-colors">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-primary">Donar para los Cafesaurios</CardTitle>
-                <CardDescription>¡Ayúdanos a seguir creciendo!</CardDescription>
+                <CardDescription>Esta caro el cafe, haste querer</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="text-xl font-bold flex items-center">
