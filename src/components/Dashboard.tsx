@@ -113,7 +113,7 @@ const Dashboard = ({ data }: DashboardProps) => {
             <TopCustomersChart data={data} />
             <CustomerSalesChart data={data} />
             <ProfitBySegmentChart data={data} />
-            <RegionalPerformanceChart data={data} />
+            <SalesByCategoryChart data={data} />
           </div>
         </TabsContent>
         
@@ -122,7 +122,7 @@ const Dashboard = ({ data }: DashboardProps) => {
             <TopProductsChart data={data} />
             <SalesByCategoryChart data={data} />
             <DiscountAnalysisChart data={data} />
-            <DiscountProfitChart data={data} />
+            <SalesOverTimeChart data={data} />
           </div>
         </TabsContent>
         
@@ -131,7 +131,7 @@ const Dashboard = ({ data }: DashboardProps) => {
             <RegionalPerformanceChart data={data} />
             <SalesOverTimeChart data={data} />
             <ShippingModeChart data={data} />
-            <ProfitBySegmentChart data={data} />
+            <DiscountProfitChart data={data} />
           </div>
         </TabsContent>
       </Tabs>
