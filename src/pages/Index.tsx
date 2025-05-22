@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import Dashboard from "@/components/Dashboard";
 import { Button } from "@/components/ui/button";
-import { ChartBarIcon, ArrowPathIcon } from "lucide-react";
+import { BarChart2, RefreshCw } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { SalesData } from "@/types/salesData";
 import { fetchSalesData } from "@/services/dataService";
@@ -60,7 +60,7 @@ const Index = () => {
                 disabled={loading}
                 className="flex items-center gap-2"
               >
-                <ArrowPathIcon className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+                <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
                 {loading ? "Cargando..." : "Actualizar datos"}
               </Button>
             </div>
@@ -83,7 +83,7 @@ const Index = () => {
         {!error && (
           loading ? (
             <div className="flex flex-col items-center justify-center py-12">
-              <ChartBarIcon className="h-12 w-12 text-primary animate-pulse mb-4" />
+              <BarChart2 className="h-12 w-12 text-primary animate-pulse mb-4" />
               <h2 className="text-xl font-medium text-gray-700 dark:text-gray-200">
                 Cargando datos...
               </h2>

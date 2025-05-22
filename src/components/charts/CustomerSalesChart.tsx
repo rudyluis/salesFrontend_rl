@@ -57,6 +57,38 @@ const CustomerSalesChart = ({ data }: CustomerSalesChartProps) => {
     return segmentData;
   }, [data]);
 
+  const CustomizedContent = (props: any) => {
+    const { root, depth, x, y, width, height, index, name } = props;
+    
+    return (
+      <g>
+        <rect
+          x={x}
+          y={y}
+          width={width}
+          height={height}
+          style={{
+            fill: depth < 2 ? COLORS[index % COLORS.length] : COLORS[(index + 4) % COLORS.length],
+            stroke: '#fff',
+            strokeWidth: 2 / (depth + 1e-10),
+            strokeOpacity: 1 / (depth + 1e-10),
+          }}
+        />
+        {depth === 1 && width > 20 && height > 20 && (
+          <text
+            x={x + width / 2}
+            y={y + height / 2 + 7}
+            textAnchor="middle"
+            fill="#fff"
+            fontSize={12}
+          >
+            {name}
+          </text>
+        )}
+      </g>
+    );
+  };
+
   return (
     <Card className="col-span-1">
       <CardHeader>
@@ -77,35 +109,7 @@ const CustomerSalesChart = ({ data }: CustomerSalesChartProps) => {
                 aspectRatio={4 / 3}
                 stroke="#fff"
                 fill="#8884d8"
-                content={({ root, depth, x, y, width, height, index, payload, colors, rank, name }) => {
-                  return (
-                    <g>
-                      <rect
-                        x={x}
-                        y={y}
-                        width={width}
-                        height={height}
-                        style={{
-                          fill: depth < 2 ? COLORS[index % COLORS.length] : COLORS[(index + 4) % COLORS.length],
-                          stroke: '#fff',
-                          strokeWidth: 2 / (depth + 1e-10),
-                          strokeOpacity: 1 / (depth + 1e-10),
-                        }}
-                      />
-                      {depth === 1 && width > 20 && height > 20 && (
-                        <text
-                          x={x + width / 2}
-                          y={y + height / 2 + 7}
-                          textAnchor="middle"
-                          fill="#fff"
-                          fontSize={12}
-                        >
-                          {name}
-                        </text>
-                      )}
-                    </g>
-                  );
-                }}
+                content={<CustomizedContent />}
               >
                 <ChartTooltip content={<ChartTooltipContent />} />
               </Treemap>
