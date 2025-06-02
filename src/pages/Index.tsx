@@ -1,44 +1,86 @@
-
 import { useState, useEffect } from "react";
 import Dashboard from "@/components/Dashboard";
 import { Button } from "@/components/ui/button";
 import { BarChart2, RefreshCw } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { SalesData } from "@/types/salesData";
-import { fetchSalesData } from "@/services/dataService";
+// Importamos solo fetchAllSalesData y las funciones analíticas que el Dashboard realmente necesita
+import { fetchAllSalesData, fetchSalesSummary, fetchSalesByCategory, fetchRegionalPerformance, fetchTopCustomers, fetchTopProducts } from "@/services/dataService"; 
 
 const Index = () => {
-  const [data, setData] = useState<SalesData[]>([]);
+  const [data, setData] = useState<SalesData[]>([]); // Para los datos crudos si Dashboard los usa
+  const [summaryData, setSummaryData] = useState<any>(null); // Para el resumen de ventas (ej: total_sales, total_profit)
+  const [categoryData, setCategoryData] = useState<any>(null); // Para ventas por categoría
+  const [regionData, setRegionData] = useState<any>(null); // Para rendimiento regional
+  const [topCustomersData, setTopCustomersData] = useState<any>(null); // Para top clientes
+  const [topProductsData, setTopProductsData] = useState<any>(null); // Para top productos
+
+
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const loadData = async () => {
+  const loadDashboardData = async () => { // Renombramos la función para mayor claridad
     setLoading(true);
     setError(null);
     try {
-      const salesData = await fetchSalesData();
+      // **IMPORTANTE: ELIMINAMOS LA LLAMADA A loadDataInBackend AQUÍ**
+      // Los datos ya están en la DB. loadDataInBackend se usa para cargar el CSV a la DB.
+      // Si quieres un botón para RECARGAR el CSV, esa función debería estar atada a ese botón.
+
+      // Paso 1: Obtener el resumen de ventas
+      const summary = await fetchSalesSummary();
+      setSummaryData(summary);
+      console.log("Resumen de ventas cargado:", summary);
+      
+      // Paso 2: Obtener todos los datos crudos (si el Dashboard los necesita, si no, puedes comentarlo)
+      const salesData = await fetchAllSalesData();
       setData(salesData);
+      console.log(`Se cargaron ${salesData.length} registros de ventas crudos.`);
+
+      // Paso 3: Cargar los datos analíticos adicionales
+      // Estas llamadas fallarán (404) hasta que implementes los endpoints en el backend.
+      // Puedes comentarlas temporalmente si no quieres ver los errores 404 en la consola
+      // hasta que las implementes.
+      const categories = await fetchSalesByCategory();
+      setCategoryData(categories);
+      console.log("Ventas por categoría cargadas:", categories);
+
+      const regions = await fetchRegionalPerformance();
+      setRegionData(regions);
+      console.log("Rendimiento regional cargado:", regions);
+
+      const topCustomers = await fetchTopCustomers();
+      setTopCustomersData(topCustomers);
+      console.log("Top Clientes cargados:", topCustomers);
+
+      const topProducts = await fetchTopProducts();
+      setTopProductsData(topProducts);
+      console.log("Top Productos cargados:", topProducts);
+
+
       toast({
-        title: "Datos cargados",
-        description: `Se han cargado ${salesData.length} registros de ventas`,
+        title: "Dashboard Actualizado",
+        description: `Datos cargados exitosamente desde el backend.`,
         variant: "default",
       });
-    } catch (err) {
-      setError("Error al cargar los datos. Por favor, inténtalo de nuevo.");
+
+    } catch (err: any) {
+      // Este catch ahora manejará errores reales (ej. 404 por endpoints no implementados, o 500)
+      console.error("Error en Index.tsx al cargar datos del dashboard:", err); // Para depuración
+      setError(`Error al cargar datos del dashboard: ${err.message || "Error desconocido"}.`);
       toast({
-        title: "Error",
-        description: "No se pudieron cargar los datos de ventas",
+        title: "Error de carga",
+        description: `No se pudieron cargar todos los datos: ${err.message || "Error desconocido"}`,
         variant: "destructive",
       });
-      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadData();
+    loadDashboardData(); // Se ejecuta solo una vez al montar el componente
   }, []);
 
   return (
@@ -56,13 +98,28 @@ const Index = () => {
             </div>
             <div className="mt-4 md:mt-0">
               <Button 
-                onClick={loadData} 
+                onClick={loadDashboardData} // Ahora este botón recarga los datos del dashboard
                 disabled={loading}
                 className="flex items-center gap-2"
               >
                 <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-                {loading ? "Cargando..." : "Actualizar datos"}
+                {loading ? "Cargando..." : "Actualizar Dashboard"}
               </Button>
+               {/* Si necesitas un botón para recargar el CSV en la DB, sería otro botón
+               <Button 
+                   onClick={async () => {
+                       try {
+                           const result = await loadDataInBackend();
+                           toast({ title: "Carga DB", description: result.message });
+                           loadDashboardData(); // Recargar el dashboard después de cargar la DB
+                       } catch (e: any) {
+                           toast({ title: "Error Carga DB", description: e.message, variant: "destructive" });
+                       }
+                   }}
+               >
+                   Recargar CSV en DB
+               </Button>
+               */}
             </div>
           </div>
         </header>
@@ -72,7 +129,7 @@ const Index = () => {
             <p>{error}</p>
             <Button 
               variant="outline" 
-              onClick={loadData} 
+              onClick={loadDashboardData} 
               className="mt-2"
             >
               Reintentar
@@ -92,7 +149,15 @@ const Index = () => {
               </p>
             </div>
           ) : (
-            <Dashboard data={data} />
+            // Pasa todos los datos relevantes al Dashboard
+            <Dashboard 
+              data={data} // Esto es SalesData[]
+              summaryData={summaryData}
+              categoryData={categoryData}
+              regionData={regionData}
+              topCustomersData={topCustomersData}
+              topProductsData={topProductsData}
+            />
           )
         )}
       </div>
