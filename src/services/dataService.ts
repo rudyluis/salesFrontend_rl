@@ -3,7 +3,8 @@
 import { SalesData, SalesSummary, CategorySales, RegionalPerformance, TopCustomer, TopProduct } from "@/types/salesData";
 
 // Define la URL base de tu API de Flask
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+//const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://sales-dashboard-backendd-rl.onrender.com';
 
 // --- Funciones para cargar y obtener todos los datos ---
 
